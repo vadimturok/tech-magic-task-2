@@ -21,7 +21,13 @@
 To run application locally:
 
 1. Clone project on your local machine.
-2. Run following command to start application in development mode:
+2. Install all dependencies:
+
+```
+npm install
+```
+
+3. Run following command to start application in development mode:
 
 ```
 npm run start
