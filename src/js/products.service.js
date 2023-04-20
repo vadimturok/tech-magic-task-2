@@ -3,6 +3,16 @@ import {BadRequestError} from "./error";
 const BASE_URL = 'https://dummyjson.com'
 
 export class ProductsService{
+    static getProductsBySearchQuery = async (query) => {
+        try{
+            const fetchedProducts = await fetch(BASE_URL + `/products/search?q=${query}`)
+            const products = await fetchedProducts.json()
+            return products
+        }catch(e){
+            throw new BadRequestError('Error while fetching products by query')
+        }
+    }
+
     static getAllProducts = async () => {
         try{
             const fetchedProducts = await fetch(BASE_URL + '/products?limit=20')

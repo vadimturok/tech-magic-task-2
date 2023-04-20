@@ -1,11 +1,14 @@
-import css from './index.css'
-import {getCategoryTemplate, getDetailsProductTemplate, getProductTemplate} from "./templates";
-import {ProductsService} from "./products.service";
-import {BadRequestError} from './error'
+import css from './css/index.css'
+import {getCategoryTemplate, getDetailsProductTemplate, getProductTemplate} from "./js/templates";
+import {ProductsService} from "./js/products.service";
+import {BadRequestError} from './js/error'
 
 const productsList = document.querySelector('.main__right')
 const categorySelect = document.querySelector('.select')
 const singleProduct = document.querySelector('.single-product')
+const searchInput = document.querySelector('.search__input')
+const searchButton = document.querySelector('.search__button')
+const searchResetButton = document.querySelector('.search__reset-button')
 
 
 const showInitialProducts = async () => {
@@ -74,12 +77,49 @@ const selectProduct = async (id) => {
     }
 }
 
+const searchProducts = async () => {
+    const value = searchInput.value
+    if(!value.length) return;
+    try{
+        const prods = await ProductsService.getProductsBySearchQuery(value)
+        if(prods.products.length === 0){
+            productsList.textContent = 'Products not found'
+        }else{
+            showAllProducts(prods.products)
+        }
+        searchResetButton.removeAttribute('disabled')
+
+    }catch(e){
+        if(e instanceof BadRequestError){
+            productsList.textContent = e.message
+        }
+    }
+}
+
+const inputChange = (e) => {
+    if(e.target.value.length === 0){
+        searchButton.setAttribute('disabled', true)
+    }else{
+        searchButton.removeAttribute('disabled')
+    }
+}
+
+const resetProducts = () => {
+    searchInput.value = ''
+    showInitialProducts()
+    searchResetButton.setAttribute('disabled', true)
+    searchButton.setAttribute('disabled', true)
+}
+
 const clearProduct = () => {
     singleProduct.innerHTML = ''
 }
 
 
 categorySelect.addEventListener('change', selectCategory)
+searchButton.addEventListener('click', searchProducts)
+searchResetButton.addEventListener('click', resetProducts)
+searchInput.addEventListener('keyup', inputChange)
 showInitialProducts()
 showAllCategories()
 
